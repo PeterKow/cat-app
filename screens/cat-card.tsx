@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { View, Image, Button, Text, StyleSheet } from 'react-native'
+import {View, Image, Text, StyleSheet } from 'react-native'
 import { favouriteCat, unfavouriteCat } from './api'
+import {Button, Card} from 'react-native-paper'
 
 interface Cat {
   id: string
@@ -39,20 +40,28 @@ export default function CatCard({ cat, onVote }: Props) {
   }
 
   return (
-    <View style={styles.card}>
+    <Card style={styles.card}>
       <Image source={{ uri: cat.url }} style={styles.image} />
-      <Text>Score: {score}</Text>
+      <Text style={styles.score}>Score: {score}</Text>
       <View style={styles.buttons}>
-        <Button title="Vote Up" onPress={handleVoteUp} />
-        <Button title="Vote Down" onPress={handleVoteDown} />
+        <Button icon="thumb-up" mode="contained" onPress={handleVoteUp} >
+          Vote Up
+        </Button>
+        <Button icon="thumb-down" mode="contained" onPress={handleVoteDown} >
+          Vote Down
+        </Button>
       </View>
-      <Button title={isFavourite ? 'Unfavourite' : 'Favourite'} onPress={handleFavourite} />
-    </View>
+
+      <Button icon={ isFavourite ? "heart-outline": "heart"} mode="contained" onPress={handleFavourite} >
+        {isFavourite ? 'Unfavourite' : 'Favourite'}
+      </Button>
+    </Card>
   )
 }
 
 const styles = StyleSheet.create({
-  card: { flex: 1, margin: 5, borderWidth: 1, borderRadius: 8, padding: 10 },
+  card: { flex: 1, margin: 5, borderRadius: 12, padding: 10 },
+  score: { paddingTop: 8, textAlign: 'center', fontSize: 22 },
   image: { width: '100%', height: 150, borderRadius: 8 },
-  buttons: { flexDirection: 'row', justifyContent: 'space-between', marginVertical: 5 }
+  buttons: { flexDirection: 'row', justifyContent: 'space-between', marginVertical: 5, paddingBottom: 8, paddingTop: 8 }
 })

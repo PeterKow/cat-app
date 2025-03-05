@@ -1,15 +1,17 @@
 import React, { useState } from 'react'
-import { View, Button, Image, StyleSheet } from 'react-native'
+import { View, Image, StyleSheet } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import { uploadImage } from './api'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../app'
 import Toast from 'react-native-toast-message'
+import { Button } from 'react-native-paper'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Upload'>
 
 export default function UploadScreen({ navigation }: Props) {
   const [image, setImage] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -25,47 +27,45 @@ export default function UploadScreen({ navigation }: Props) {
   }
 
   const handleUpload = async () => {
-    if (image) {
-      try {
-        const res = await uploadImage(image)
-        console.log('Upload response:', res)
-        // if (res.status === 200 || res.status === 201) {
-          Toast.show({
-            type: 'success',
-            text1: 'Upload Successful',
-            text2: 'Your image was uploaded successfully'
-          })
-          navigation.navigate('Home')
-        // } else {
-        //   Toast.show({
-        //     type: 'error',
-        //     text1: 'Upload Failed',
-        //     text2: 'There was an error uploading your image'
-        //   })
-        //   console.error('Upload failed:', res.status, res.data)
-        // }
-      } catch (error) {
-        Toast.show({
-          type: 'error',
-          text1: 'Upload Error',
-          text2: 'There was an error during upload'
-        })
-        console.error('Upload error:', error)
-      }
+    if (!image) return
+
+    setLoading(true)
+    try {
+      const res = await uploadImage(image)
+      Toast.show({
+        type: 'success',
+        text1: 'Upload Successful',
+        text2: 'Your image was uploaded successfully'
+      })
+      navigation.navigate('Home')
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Upload Error',
+        text2: 'There was an error during upload'
+      })
+      console.error('Upload error:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
     <View style={styles.container}>
-      <Button title="Pick an image from gallery" onPress={pickImage} />
+      <Button style={styles.button} icon="camera" mode="contained" onPress={pickImage}>
+        Pick an image from gallery
+      </Button>
       {image && <Image source={{ uri: image }} style={styles.image} />}
-      <Button title="Upload" onPress={handleUpload} />
       <Toast />
+      <Button icon="file-upload" mode="contained" loading={loading} disabled={loading} onPress={handleUpload}>
+        {loading ? 'Uploading...' : 'Save'}
+      </Button>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  image: { width: 200, height: 200, marginVertical: 20 }
+  image: { width: 200, height: 200, marginVertical: 20 },
+  button: { marginVertical: 8, }
 })

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { View, FlatList, Button, StyleSheet } from 'react-native'
+import { View, FlatList, StyleSheet } from 'react-native'
 import CatCard from './cat-card'
 import { fetchImages, voteCat } from './api'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../app'
+import {Button} from 'react-native-paper'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>
 
@@ -33,7 +34,9 @@ export default function HomeScreen({ navigation }: Props) {
 
   return (
     <View style={styles.container}>
-      <Button title="Upload Cat" onPress={() => navigation.navigate('Upload')} />
+      <Button style={styles.button} icon="camera" mode="contained" onPress={() => navigation.navigate('Upload')} >
+        Upload Cat
+      </Button>
       <FlatList
         data={cats}
         keyExtractor={(item) => item.id}
@@ -45,5 +48,6 @@ export default function HomeScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10 }
+  container: { flex: 1, padding: 10 },
+  button: { marginVertical: 8, }
 })
