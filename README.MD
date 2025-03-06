@@ -1,5 +1,14 @@
+# TODO
 
-Folder Structure
+[] add env support
+[] pick api client to unify fetch and notification handling
+[] add permission checks
+[] add state management (context, zustand?)
+[] add animations
+[] add icon and splashscreen
+[] add test
+
+## Folder Structure
 assets/         // images, fonts, etc.
 components/     // reusable UI parts
 hooks/          // custom hooks

@@ -1,4 +1,5 @@
-const API_KEY = 'live_tpiAXTOxiJP3SzO74s5mwjvIrjRefWNiK0Mxzac9vxpoToc3b1moNK5w40I4LCax'
+// TODO use .env to inject api key
+const API_KEY = ''
 const BASE_URL = 'https://api.thecatapi.com/v1'
 
 const handleResponse = async (response: Response) => {

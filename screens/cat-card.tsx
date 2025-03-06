@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { View, Image, Text, StyleSheet } from 'react-native'
-import { favouriteCat, unfavouriteCat } from './api'
+import {favouriteCat, unfavouriteCat, voteCat} from './api'
 import { Button } from 'react-native-paper'
 import Card from '@components/ui/card'
 import Toast from 'react-native-toast-message'
@@ -13,46 +13,57 @@ interface Cat {
 
 interface Props {
   cat: Cat
-  onVote: (image_id: string, value: number) => Promise<void>
 }
 
-export default function CatCard({ cat, onVote }: Props) {
+export default function CatCard({ cat }: Props) {
   const [isFavourite, setIsFavourite] = useState(false)
   const [score, setScore] = useState(0)
+  const [loading, setLoading] = useState<null | 'favourite' | 'voteUp' | 'voteDown'>(null)
 
   const handleFavourite = async () => {
-    if (!isFavourite) {
-      try {
+    setLoading('favourite')
+    try {
+      if (!isFavourite) {
         //TODO decide on the api fetch client and notification handling
-        const res = await favouriteCat(cat.id)
+        await favouriteCat(cat.id)
         setIsFavourite(true)
         Toast.show({
           type: 'success',
           text1: 'Favourite Success',
         })
-      } catch (error) {
+      }
+      else {
+        await unfavouriteCat(cat.favourite_id || '')
+        setIsFavourite(false)
         Toast.show({
-          type: 'error',
-          text1: 'Please try again.',
+          type: 'success',
+          text1: 'Unfavourite Success',
         })
       }
     }
-    else {
-      await unfavouriteCat(cat.favourite_id || '')
-      setIsFavourite(false)
+    catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Please try again.',
+      })
     }
+    setLoading(null)
   }
 
   const handleVoteUp = async () => {
-    await onVote(cat.id, 1)
+    setLoading('voteUp')
+    await voteCat(cat.id, 1)
     // TODO for now: optimistic update
     setScore(score + 1)
+    setLoading(null)
   }
 
   const handleVoteDown = async () => {
-    await onVote(cat.id, 0)
+    setLoading('voteDown')
+    await voteCat(cat.id, 0)
     // TODO for now: optimistic update
     setScore(score - 1)
+    setLoading(null)
   }
 
   return (
@@ -60,14 +71,14 @@ export default function CatCard({ cat, onVote }: Props) {
       <Image source={{ uri: cat.url }} style={styles.image} />
       <Text style={styles.score}>Score: {score}</Text>
       <View style={styles.buttons}>
-        <Button icon="thumb-up" mode="contained" onPress={handleVoteUp}>
+        <Button icon="thumb-up" mode="contained" onPress={handleVoteUp} loading={loading === 'voteUp'}>
           Vote Up
         </Button>
-        <Button icon="thumb-down" mode="contained" onPress={handleVoteDown}>
+        <Button icon="thumb-down" mode="contained" onPress={handleVoteDown} loading={loading === 'voteDown'}>
           Vote Down
         </Button>
       </View>
-      <Button icon={isFavourite ? 'heart-outline' : 'heart'} mode="contained" onPress={handleFavourite}>
+      <Button icon={isFavourite ? 'heart-outline' : 'heart'} mode="contained" onPress={handleFavourite} loading={loading === 'favourite'}>
         {isFavourite ? 'Unfavourite' : 'Favourite'}
       </Button>
     </Card>

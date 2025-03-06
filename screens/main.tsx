@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { View, FlatList, StyleSheet } from 'react-native'
 import CatCard from './cat-card'
-import { fetchImages, voteCat } from './api'
+import { fetchImages } from './api'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../app'
 import {Button} from 'react-native-paper'
@@ -27,11 +27,6 @@ export default function HomeScreen({ navigation }: Props) {
     setCats(data)
   }
 
-  const handleVote = async (image_id: string, value: number) => {
-    await voteCat(image_id, value)
-    loadCats()
-  }
-
   return (
     <View style={styles.container}>
       <Button style={styles.button} icon="camera" mode="contained" onPress={() => navigation.navigate('Upload')} >
@@ -40,7 +35,7 @@ export default function HomeScreen({ navigation }: Props) {
       <FlatList
         data={cats}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <CatCard cat={item} onVote={handleVote} />}
+        renderItem={({ item }) => <CatCard cat={item}/>}
         numColumns={1}
       />
     </View>
