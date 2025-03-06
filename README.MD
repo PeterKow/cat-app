@@ -1,19 +1,20 @@
 # TODO
 
-[] add env support
-[] pick api client to unify fetch and notification handling
-[] add permission checks
-[] add state management (context, zustand?)
-[] add animations
-[] add icon and splashscreen
-[] add test
+- [ ] Add env support
+- [ ] Pick API client to unify fetch and notification handling
+- [ ] Add permission checks
+- [ ] Add state management (context, Zustand?)
+- [ ] Add animations
+- [ ] Add icon and splash screen
+- [ ] Add tests
 
 ## Folder Structure
-assets/         // images, fonts, etc.
-components/     // reusable UI parts
-hooks/          // custom hooks
-navigation/     // navigation stacks & routes
-screens/        // full-screen views
-services/       // API calls & business logic
-store/          // state management (Redux, context, etc.)
-utils/          // helper functions, constants, etc.
+
+- `assets/` — Images, fonts, etc.
+- `components/` — Reusable UI parts
+- `hooks/` — Custom hooks
+- `navigation/` — Navigation stacks & routes
+- `screens/` — Full-screen views
+- `services/` — API calls & business logic
+- `store/` — State management (Redux, Context, etc.)
+- `utils/` — Helper functions, constants, etc.
