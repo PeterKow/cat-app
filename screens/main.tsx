@@ -41,7 +41,7 @@ export default function HomeScreen({ navigation }: Props) {
         data={cats}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <CatCard cat={item} onVote={handleVote} />}
-        numColumns={2}
+        numColumns={1}
       />
     </View>
   )
