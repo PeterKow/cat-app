@@ -20,7 +20,6 @@ export default function UploadScreen({ navigation }: Props) {
       aspect: [4, 3],
       quality: 1,
     })
-    console.log(result)
     if (!result.canceled) {
       setImage(result.assets[0].uri)
     }
@@ -44,7 +43,6 @@ export default function UploadScreen({ navigation }: Props) {
         text1: 'Upload Error',
         text2: 'There was an error during upload'
       })
-      console.error('Upload error:', error)
     } finally {
       setLoading(false)
     }

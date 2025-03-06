@@ -6,6 +6,7 @@ import UploadScreen from './screens/upload-screen'
 import {PaperProvider} from 'react-native-paper'
 import {darkTheme, lightTheme} from '@components/theme'
 import {useColorScheme} from 'react-native'
+import Toast from 'react-native-toast-message'
 
 export type RootStackParamList = {
   Home: undefined
@@ -26,6 +27,7 @@ export default function App() {
           <Stack.Screen name="Upload" component={UploadScreen} />
         </Stack.Navigator>
       </NavigationContainer>
+      <Toast />
     </PaperProvider>
   )
 }

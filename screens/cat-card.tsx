@@ -30,14 +30,17 @@ export default function CatCard({ cat }: Props) {
         Toast.show({
           type: 'success',
           text1: 'Favourite Success',
+          text2: 'You love it',
         })
       }
       else {
+        // TODO update favourite_id after fav
         await unfavouriteCat(cat.favourite_id || '')
         setIsFavourite(false)
         Toast.show({
           type: 'success',
           text1: 'Unfavourite Success',
+          text2: 'Maybe next time',
         })
       }
     }
@@ -60,9 +63,9 @@ export default function CatCard({ cat }: Props) {
 
   const handleVoteDown = async () => {
     setLoading('voteDown')
-    await voteCat(cat.id, 0)
+    await voteCat(cat.id, -1)
     // TODO for now: optimistic update
-    setScore(score - 1)
+    setScore(score === 0 ? 0 : score - 1)
     setLoading(null)
   }
 
