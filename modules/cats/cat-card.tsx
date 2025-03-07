@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { View, Image, Text, StyleSheet } from 'react-native'
-import { favouriteCat, unfavouriteCat, voteCat } from './api'
+import { favouriteCat, unfavouriteCat, voteCat } from './cat-api'
 import { Button } from 'react-native-paper'
 import Card from '@components/ui/card'
 import Toast from 'react-native-toast-message'

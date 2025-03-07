@@ -1,4 +1,4 @@
-import {apiFetch, createRequest} from '../services/api-client'
+import {apiFetch, createRequest} from '@services/api-client'
 
 export const uploadImage = async (imageUri: string) => {
   const formData = new FormData()

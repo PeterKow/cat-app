@@ -4,7 +4,15 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@components/*": ["components/*"]
+      "@assets/*": ["assets/*"],
+      "@components/*": ["components/*"],
+      "@hooks/*": ["hooks/*"],
+      "@navigation/*": ["navigation/*"],
+      "@screens/*": ["screens/*"],
+      "@modules/*": ["modules/*"],
+      "@services/*": ["services/*"],
+      "@store/*": ["store/*"],
+      "@utils/*": ["utils/*"]
     }
   }
 }

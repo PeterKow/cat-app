@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router'
 import { useMutation } from '@tanstack/react-query'
 import Toast from 'react-native-toast-message'
 import { Button } from 'react-native-paper'
-import { uploadImage } from './api'
+import { uploadImage } from '@modules/cats/cat-api'
 
 export default function UploadScreen() {
   const [image, setImage] = useState<string | null>(null)
