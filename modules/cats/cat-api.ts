@@ -1,4 +1,5 @@
 import {apiFetch, createRequest} from '@services/api-client'
+import { Cat } from '@modules/cats/cat-types'
 
 export const uploadImage = async (imageUri: string) => {
   const formData = new FormData()
@@ -9,7 +10,7 @@ export const uploadImage = async (imageUri: string) => {
   return apiFetch('/images/upload', createRequest('POST', formData))
 }
 
-export const fetchImages = async () => {
+export const fetchImages: () => Promise<[Cat]> = async () => {
   return apiFetch('/images/search?limit=4')
 }
 

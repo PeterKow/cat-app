@@ -5,12 +5,7 @@ import { Button } from 'react-native-paper'
 import Card from '@components/ui/card'
 import Toast from 'react-native-toast-message'
 import { useMutation } from '@tanstack/react-query'
-
-interface Cat {
-  id: string
-  url: string
-  favourite_id?: number
-}
+import {Cat} from '@modules/cats/cat-types'
 
 interface Props {
   cat: Cat

@@ -6,15 +6,9 @@ import { Button } from 'react-native-paper'
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 
-interface Cat {
-  id: string
-  url: string
-  favourite_id?: number
-}
-
 export default function HomeScreen() {
   const router = useRouter()
-  const { data: cats, refetch, isPending } = useQuery<Cat[]>({
+  const { data: cats, refetch, isPending } = useQuery({
     queryKey: ['cats'],
     queryFn: fetchImages,
   })
