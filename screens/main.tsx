@@ -1,17 +1,13 @@
 import React from 'react'
 import { View, FlatList, StyleSheet } from 'react-native'
 import CatCard from '@modules/cats/cat-card'
-import { fetchImages } from '@modules/cats/cat-api'
 import { Button } from 'react-native-paper'
-import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
+import {useCats} from '@modules/cats/cat-hooks'
 
 export default function HomeScreen() {
   const router = useRouter()
-  const { data: cats, refetch, isPending } = useQuery({
-    queryKey: ['cats'],
-    queryFn: fetchImages,
-  })
+  const { cats, refetch, isPending } = useCats()
 
   return (
     <View style={styles.container}>
