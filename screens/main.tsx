@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { View, FlatList, StyleSheet } from 'react-native'
 import CatCard from './cat-card'
 import { fetchImages } from './api'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../app'
-import {Button} from 'react-native-paper'
+import { Button } from 'react-native-paper'
+import { useQuery } from 'react-query'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>
 
@@ -15,17 +16,7 @@ interface Cat {
 }
 
 export default function HomeScreen({ navigation }: Props) {
-  const [cats, setCats] = useState<Cat[]>([])
-
-  useEffect(() => {
-    // TODO load only 4?
-    loadCats()
-  }, [])
-
-  const loadCats = async () => {
-    const data = await fetchImages()
-    setCats(data)
-  }
+  const { data: cats, refetch, isLoading } = useQuery<Cat[]>('cats', fetchImages)
 
   return (
     <View style={styles.container}>
@@ -35,8 +26,10 @@ export default function HomeScreen({ navigation }: Props) {
       <FlatList
         data={cats}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <CatCard cat={item}/>}
+        renderItem={({ item }) => <CatCard cat={item} />}
         numColumns={1}
+        onRefresh={refetch}
+        refreshing={isLoading}
       />
     </View>
   )

@@ -1,7 +1,6 @@
 # TODO
 
 - [ ] Add env support
-- [ ] Pick API client to unify fetch and notification handling
 - [ ] Add permission checks
 - [ ] Add state management (context, Zustand?)
 - [ ] Add animations

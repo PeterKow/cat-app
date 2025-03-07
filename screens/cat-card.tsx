@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { View, Image, Text, StyleSheet } from 'react-native'
-import {favouriteCat, unfavouriteCat, voteCat} from './api'
+import { favouriteCat, unfavouriteCat, voteCat } from './api'
 import { Button } from 'react-native-paper'
 import Card from '@components/ui/card'
 import Toast from 'react-native-toast-message'
+import { useMutation } from 'react-query'
 
 interface Cat {
   id: string
@@ -18,70 +19,113 @@ interface Props {
 export default function CatCard({ cat }: Props) {
   const [isFavourite, setIsFavourite] = useState(false)
   const [score, setScore] = useState(0)
-  const [loading, setLoading] = useState<null | 'favourite' | 'voteUp' | 'voteDown'>(null)
 
-  const handleFavourite = async () => {
-    setLoading('favourite')
-    try {
-      if (!isFavourite) {
-        //TODO decide on the api fetch client and notification handling
-        await favouriteCat(cat.id)
-        setIsFavourite(true)
-        Toast.show({
-          type: 'success',
-          text1: 'Favourite Success',
-          text2: 'You love it',
-        })
-      }
-      else {
-        // TODO update favourite_id after fav
-        await unfavouriteCat(cat.favourite_id || '')
-        setIsFavourite(false)
-        Toast.show({
-          type: 'success',
-          text1: 'Unfavourite Success',
-          text2: 'Maybe next time',
-        })
-      }
-    }
-    catch (error) {
+  const favouriteMutation = useMutation(() => favouriteCat(cat.id), {
+    onSuccess: () => {
+      setIsFavourite(true)
+      Toast.show({
+        type: 'success',
+        text1: 'Favourite Success',
+        text2: 'You love it',
+      })
+    },
+    onError: () => {
       Toast.show({
         type: 'error',
         text1: 'Please try again.',
       })
     }
-    setLoading(null)
+  })
+
+  // TODO fix: use actually fav_id
+  const unfavouriteMutation = useMutation(() => unfavouriteCat(cat.favourite_id || ''), {
+    onSuccess: () => {
+      setIsFavourite(false)
+      Toast.show({
+        type: 'success',
+        text1: 'Unfavourite Success',
+        text2: 'Maybe next time',
+      })
+    },
+    onError: () => {
+      Toast.show({
+        type: 'error',
+        text1: 'Please try again.',
+      })
+    }
+  })
+
+  const voteUpMutation = useMutation(() => voteCat(cat.id, 1), {
+    onSuccess: () => {
+      setScore(prev => prev + 1)
+    },
+    onError: () => {
+      Toast.show({
+        type: 'error',
+        text1: 'Please try again.'
+      })
+    }
+  })
+
+  const voteDownMutation = useMutation(() => voteCat(cat.id, -1), {
+    onSuccess: () => {
+      setScore(prev => (prev > 0 ? prev - 1 : 0))
+    },
+    onError: () => {
+      Toast.show({
+        type: 'error',
+        text1: 'Please try again.'
+      })
+    }
+  })
+
+  const handleFavourite = () => {
+    if (!isFavourite) {
+      favouriteMutation.mutate()
+    }
+    else {
+      unfavouriteMutation.mutate()
+    }
   }
 
-  const handleVoteUp = async () => {
-    setLoading('voteUp')
-    await voteCat(cat.id, 1)
-    // TODO for now: optimistic update
-    setScore(score + 1)
-    setLoading(null)
+  const handleVoteUp = () => {
+    voteUpMutation.mutate()
   }
 
-  const handleVoteDown = async () => {
-    setLoading('voteDown')
-    await voteCat(cat.id, -1)
-    // TODO for now: optimistic update
-    setScore(score === 0 ? 0 : score - 1)
-    setLoading(null)
+  const handleVoteDown = () => {
+    voteDownMutation.mutate()
   }
+
+  const favouriteLoading = favouriteMutation.isLoading || unfavouriteMutation.isLoading
 
   return (
     <Card>
       <Image source={{ uri: cat.url }} style={styles.image} />
       <Text style={styles.score}>Score: {score}</Text>
       <View style={styles.buttons}>
-        <Button icon="thumb-up" mode="contained" onPress={handleVoteUp} loading={loading === 'voteUp'}>
+        <Button
+          icon="thumb-up"
+          mode="contained"
+          onPress={handleVoteUp}
+          loading={voteUpMutation.isLoading}
+        >
           Vote Up
         </Button>
-        <Button icon="thumb-down" mode="contained" onPress={handleVoteDown} loading={loading === 'voteDown'}>
+        <Button
+          icon="thumb-down"
+          mode="contained"
+          onPress={handleVoteDown}
+          loading={voteDownMutation.isLoading}
+        >
           Vote Down
         </Button>
       </View>
-      <Button icon={isFavourite ? 'heart-outline' : 'heart'} mode="contained" onPress={handleFavourite} loading={loading === 'favourite'}>
+      <Button
+        icon={isFavourite ? 'heart-outline' : 'heart'}
+        mode="contained"
+        onPress={handleFavourite}
+        loading={favouriteLoading}
+      >
         {isFavourite ? 'Unfavourite' : 'Favourite'}
       </Button>
     </Card>
