@@ -2,12 +2,9 @@ import React from 'react'
 import { View, FlatList, StyleSheet } from 'react-native'
 import CatCard from './cat-card'
 import { fetchImages } from './api'
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { RootStackParamList } from '../app'
 import { Button } from 'react-native-paper'
-import { useQuery } from 'react-query'
-
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>
+import { useQuery } from '@tanstack/react-query'
+import { useRouter } from 'expo-router'
 
 interface Cat {
   id: string
@@ -15,21 +12,30 @@ interface Cat {
   favourite_id?: number
 }
 
-export default function HomeScreen({ navigation }: Props) {
-  const { data: cats, refetch, isLoading } = useQuery<Cat[]>('cats', fetchImages)
+export default function HomeScreen() {
+  const router = useRouter()
+  const { data: cats, refetch, isPending } = useQuery<Cat[]>({
+    queryKey: ['cats'],
+    queryFn: fetchImages,
+  })
 
   return (
     <View style={styles.container}>
-      <Button style={styles.button} icon="camera" mode="contained" onPress={() => navigation.navigate('Upload')} >
+      <Button
+        style={styles.button}
+        icon="camera"
+        mode="contained"
+        onPress={() => router.push('/upload')}
+      >
         Upload Cat
       </Button>
       <FlatList
         data={cats}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         renderItem={({ item }) => <CatCard cat={item} />}
         numColumns={1}
         onRefresh={refetch}
-        refreshing={isLoading}
+        refreshing={isPending}
       />
     </View>
   )
@@ -37,5 +43,5 @@ export default function HomeScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 10 },
-  button: { marginVertical: 8, }
+  button: { marginVertical: 8 },
 })

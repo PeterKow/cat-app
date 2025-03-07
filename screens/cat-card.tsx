@@ -4,7 +4,7 @@ import { favouriteCat, unfavouriteCat, voteCat } from './api'
 import { Button } from 'react-native-paper'
 import Card from '@components/ui/card'
 import Toast from 'react-native-toast-message'
-import { useMutation } from 'react-query'
+import { useMutation } from '@tanstack/react-query'
 
 interface Cat {
   id: string
@@ -17,12 +17,12 @@ interface Props {
 }
 
 export default function CatCard({ cat }: Props) {
-  const [isFavourite, setIsFavourite] = useState(false)
   const [score, setScore] = useState(0)
 
-  const favouriteMutation = useMutation(() => favouriteCat(cat.id), {
-    onSuccess: () => {
-      setIsFavourite(true)
+  const favouriteMutation = useMutation({
+    mutationFn: () => favouriteCat(cat.id),
+    onSuccess: (data) => {
+      cat.favourite_id = data.id
       Toast.show({
         type: 'success',
         text1: 'Favourite Success',
@@ -37,10 +37,10 @@ export default function CatCard({ cat }: Props) {
     }
   })
 
-  // TODO fix: use actually fav_id
-  const unfavouriteMutation = useMutation(() => unfavouriteCat(cat.favourite_id || ''), {
+  const unfavouriteMutation = useMutation({
+    mutationFn: () => unfavouriteCat(cat.favourite_id!),
     onSuccess: () => {
-      setIsFavourite(false)
+      cat.favourite_id = undefined
       Toast.show({
         type: 'success',
         text1: 'Unfavourite Success',
@@ -55,10 +55,9 @@ export default function CatCard({ cat }: Props) {
     }
   })
 
-  const voteUpMutation = useMutation(() => voteCat(cat.id, 1), {
-    onSuccess: () => {
-      setScore(prev => prev + 1)
-    },
+  const voteUpMutation = useMutation({
+    mutationFn: () => voteCat(cat.id, 1),
+    onSuccess: () => setScore(prev => prev + 1),
     onError: () => {
       Toast.show({
         type: 'error',
@@ -67,10 +66,9 @@ export default function CatCard({ cat }: Props) {
     }
   })
 
-  const voteDownMutation = useMutation(() => voteCat(cat.id, -1), {
-    onSuccess: () => {
-      setScore(prev => (prev > 0 ? prev - 1 : 0))
-    },
+  const voteDownMutation = useMutation({
+    mutationFn: () => voteCat(cat.id, -1),
+    onSuccess: () => setScore(prev => (prev > 0 ? prev - 1 : 0)),
     onError: () => {
       Toast.show({
         type: 'error',
@@ -80,23 +78,14 @@ export default function CatCard({ cat }: Props) {
   })
 
   const handleFavourite = () => {
-    if (!isFavourite) {
+    if (cat.favourite_id) {
+      unfavouriteMutation.mutate()
+    } else {
       favouriteMutation.mutate()
     }
-    else {
-      unfavouriteMutation.mutate()
-    }
   }
 
-  const handleVoteUp = () => {
-    voteUpMutation.mutate()
-  }
-
-  const handleVoteDown = () => {
-    voteDownMutation.mutate()
-  }
-
-  const favouriteLoading = favouriteMutation.isLoading || unfavouriteMutation.isLoading
+  const favouriteLoading = favouriteMutation.isPending || unfavouriteMutation.isPending
 
   return (
     <Card>
@@ -106,27 +95,27 @@ export default function CatCard({ cat }: Props) {
         <Button
           icon="thumb-up"
           mode="contained"
-          onPress={handleVoteUp}
-          loading={voteUpMutation.isLoading}
+          onPress={() => voteUpMutation.mutate()}
+          loading={voteUpMutation.isPending}
         >
           Vote Up
         </Button>
         <Button
           icon="thumb-down"
           mode="contained"
-          onPress={handleVoteDown}
-          loading={voteDownMutation.isLoading}
+          onPress={() => voteDownMutation.mutate()}
+          loading={voteDownMutation.isPending}
         >
           Vote Down
         </Button>
       </View>
       <Button
-        icon={isFavourite ? 'heart-outline' : 'heart'}
+        icon={cat.favourite_id ? 'heart-outline' : 'heart'}
         mode="contained"
         onPress={handleFavourite}
         loading={favouriteLoading}
       >
-        {isFavourite ? 'Unfavourite' : 'Favourite'}
+        {cat.favourite_id ? 'Unfavourite' : 'Favourite'}
       </Button>
     </Card>
   )
