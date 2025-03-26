@@ -5,7 +5,7 @@ import { darkTheme, lightTheme } from '@components/theme'
 import Toast from 'react-native-toast-message'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Slot } from 'expo-router'
-import {SafeAreaView} from 'react-native-safe-area-context'
+// import {SafeAreaView} from 'react-native-safe-area-context'
 
 export default function RootLayout() {
   const scheme = useColorScheme()
@@ -15,9 +15,9 @@ export default function RootLayout() {
   return (
     <PaperProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
-        <SafeAreaView style={{ flex: 1 }}>
+        {/*<SafeAreaView style={{ flex: 1 }}>*/}
           <Slot />
-        </SafeAreaView>
+        {/*</SafeAreaView>*/}
         <Toast />
       </QueryClientProvider>
     </PaperProvider>

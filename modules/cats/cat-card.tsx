@@ -105,6 +105,7 @@ export default function CatCard({ cat }: Props) {
           mode="contained"
           onPress={() => voteUpMutation.mutate()}
           loading={voteUpMutation.isPending}
+          testID="vote-up-button"
         >
           Vote Up
         </Button>
