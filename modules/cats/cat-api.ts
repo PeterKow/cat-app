@@ -1,6 +1,14 @@
 import {apiFetch, createRequest} from '@services/api-client'
 import { Cat } from '@modules/cats/cat-types'
 
+const getBreedIdByName = async (search: string): Promise<string | undefined> => {
+  const breeds = await apiFetch('/breeds')
+  const match = breeds.find((b: any) =>
+    b.name.toLowerCase().includes(search.toLowerCase())
+  )
+  return match?.id
+}
+
 export const uploadImage = async (imageUri: string) => {
   const formData = new FormData()
   const filename = imageUri.split('/').pop() || 'image.jpg'
@@ -10,8 +18,22 @@ export const uploadImage = async (imageUri: string) => {
   return apiFetch('/images/upload', createRequest('POST', formData))
 }
 
-export const fetchImages: (props: { pageParam?: number, limit?: number }) => Promise<[Cat]> = async ({ pageParam = 0, limit = 200 }: { pageParam?: number, limit?: number }) => {
-  return apiFetch(`/images/search?limit=${limit}&page=${pageParam}`)
+export const fetchImages: (props: { pageParam?: number, limit?: number, search?: string }) => Promise<[Cat]> = async ({
+  pageParam = 0,
+  limit = 200,
+  search = ''
+}) => {
+  let breedQuery = ''
+  if (search) {
+    const breedId = await getBreedIdByName(search)
+    if (breedId) {
+      breedQuery = `&breed_id=${breedId}`
+    } else {
+      return Promise.resolve([])
+    }
+  }
+
+  return apiFetch(`/images/search?limit=${limit}&page=${pageParam}${breedQuery}`)
 }
 
 export const favouriteCat = async (image_id: string) => {
