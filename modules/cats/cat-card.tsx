@@ -5,7 +5,8 @@ import { Button } from 'react-native-paper'
 import Card from '@components/ui/card'
 import Toast from 'react-native-toast-message'
 import { useMutation } from '@tanstack/react-query'
-import {Cat} from '@modules/cats/cat-types'
+import { Cat } from '@modules/cats/cat-types'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 interface Props {
   cat: Cat
@@ -16,8 +17,14 @@ export default function CatCard({ cat }: Props) {
 
   const favouriteMutation = useMutation({
     mutationFn: () => favouriteCat(cat.id),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       cat.favourite_id = data.id
+      try {
+        const json = await AsyncStorage.getItem('favourites')
+        const current = json ? JSON.parse(json) : []
+        const updated = [...current, cat]
+        await AsyncStorage.setItem('favourites', JSON.stringify(updated))
+      } catch {}
       Toast.show({
         type: 'success',
         text1: 'Favourite Success',
@@ -34,8 +41,14 @@ export default function CatCard({ cat }: Props) {
 
   const unfavouriteMutation = useMutation({
     mutationFn: () => unfavouriteCat(cat.favourite_id!),
-    onSuccess: () => {
+    onSuccess: async () => {
       cat.favourite_id = undefined
+      try {
+        const json = await AsyncStorage.getItem('favourites')
+        const current = json ? JSON.parse(json) : []
+        const updated = current.filter((c: Cat) => c.id !== cat.id)
+        await AsyncStorage.setItem('favourites', JSON.stringify(updated))
+      } catch {}
       Toast.show({
         type: 'success',
         text1: 'Unfavourite Success',
