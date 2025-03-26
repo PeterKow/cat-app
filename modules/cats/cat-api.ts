@@ -10,8 +10,8 @@ export const uploadImage = async (imageUri: string) => {
   return apiFetch('/images/upload', createRequest('POST', formData))
 }
 
-export const fetchImages: () => Promise<[Cat]> = async () => {
-  return apiFetch('/images/search?limit=4')
+export const fetchImages: (props: { pageParam?: number, limit?: number }) => Promise<[Cat]> = async ({ pageParam = 0, limit = 200 }: { pageParam?: number, limit?: number }) => {
+  return apiFetch(`/images/search?limit=${limit}&page=${pageParam}`)
 }
 
 export const favouriteCat = async (image_id: string) => {
